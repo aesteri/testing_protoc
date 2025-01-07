@@ -1,0 +1,106 @@
+syntax = "proto3";
+package hytech_msgs;
+
+message veh_vec_float
+{
+    float FL = 1;
+    float FR = 2;
+    float RL = 3;
+    float RR = 4;
+}
+
+message veh_vec_int
+{
+    int32 FL = 1;
+    int32 FR = 2;
+    int32 RL = 3;
+    int32 RR = 4;
+}
+
+message xyz_vector
+{
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+message veh_vec_xyz_vector
+{
+    xyz_vector FL = 1;
+    xyz_vector FR = 2;
+    xyz_vector RL = 3;
+    xyz_vector RR = 4;
+}
+
+
+message ypr_vector
+{
+    float yaw = 1;
+    float pitch = 2;
+    float roll = 3;
+}
+
+message GPS_data
+{
+    float lat = 1;
+    float lon = 2;
+}
+
+enum INSMode {
+  TRACKING_0 = 0;
+  ALIGNING_1 = 1;
+  TRACKING_2 = 2;
+  GPS_LOSS_3 = 3;
+}
+
+message GPS_compass_signal_health_status
+{
+    int32 num_sats_pvt_1 = 1;
+    int32 num_sats_rtk_1 = 2;
+    int32 highest_cn0_1 = 3;
+    int32 num_sats_pvt_2 = 4;
+    int32 num_sats_rtk_2 = 5;
+    int32 highest_cn0_2 = 6;
+    int32 num_com_sats_pvt = 7; 
+    int32 num_com_sats_rtk= 8;
+}
+
+message vn_status
+{
+    INSMode ins_mode = 1;
+    bool gnss_fix = 2;
+    bool error_imu = 3;
+    bool error_mag_pres = 4;
+    bool error_gnss = 5;
+    bool gnss_heading_ins = 6;
+    bool gnss_compass = 7;
+    GPS_compass_signal_health_status gps_status = 8;
+}
+
+message TireDynamics
+{
+    veh_vec_xyz_vector tire_forces_n = 1;
+    veh_vec_xyz_vector tire_moments_nm = 2;
+    veh_vec_float accel_saturation_nm = 3;
+    veh_vec_float brake_saturation_nm = 4;
+}
+
+message TorqueVectoringStatus
+{
+    veh_vec_float torque_additional_nm = 1;
+    float additional_mz_moment_nm = 2;
+    float des_psi_dot = 3;
+    float psi_dot_err = 4;
+    float perceived_vx = 5;
+    float integral_yaw_rate_err = 6;
+    float perceived_psi_dot = 7;
+    float psi_dot_gain = 8;
+    float vy_vn_gain = 9;
+    float perceived_vy = 10;
+}
+
+message PowerLimitStatus
+{
+    bool power_limit_status = 1;
+    veh_vec_float corner_power_kw = 2;
+}

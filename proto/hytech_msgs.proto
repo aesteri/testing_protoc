@@ -1,0 +1,85 @@
+syntax = "proto3";
+package hytech_msgs;
+
+import "base_msgs.proto";
+
+message MCUProtoVersion
+{
+    string proto_version = 1;
+}
+
+message VCRProtoVersion
+{
+    string proto_version = 1;
+}
+
+message VCFProtoVersion
+{
+    string proto_version = 1;
+}
+
+message DBProtoVersion
+{
+    string proto_version = 1;
+}
+
+message Versions {
+    string ht_can_version = 1;
+    string ht_proto_version = 2;
+}
+
+message SpeedControlIn {
+    float accel_percent = 1;
+    float brake_percent = 2;
+}
+
+message MCUOutputData
+{
+    float accel_percent = 1;
+    float brake_percent = 2;
+    veh_vec_float rpm_data = 3;
+    int64 MCU_recv_millis = 4;
+    float steering_angle_deg = 5;
+    veh_vec_int load_cell_data = 6;
+    bool timing_failure_active = 7;
+    int32 round_trip_time_millis = 8;
+}
+
+message MCUCommandData
+{
+    veh_vec_float desired_rpms = 1;
+    veh_vec_float torque_limit_nm = 2;
+    int64 prev_MCU_recv_millis = 3;
+}
+
+message VNData
+{
+    xyz_vector vn_vel_m_s = 1;
+    xyz_vector vn_linear_accel_m_ss = 2;
+    xyz_vector vn_linear_accel_uncomp_m_ss = 3;
+    xyz_vector vn_angular_rate_rad_s = 4;
+    ypr_vector vn_ypr_rad = 5;
+    GPS_data vn_gps = 6;
+    vn_status status = 7;
+}
+
+message VehicleData
+{
+    bool is_ready_to_drive = 1;
+    SpeedControlIn current_inputs = 2;
+    xyz_vector current_body_vel_ms = 3;
+    xyz_vector current_body_accel_mss = 4;
+    xyz_vector current_angular_rate_rads = 5;
+    ypr_vector current_ypr_rad = 6;
+    veh_vec_float current_rpms = 7;
+    bool state_is_valid = 8;
+    int64 prev_MCU_recv_millis = 9;
+    float steering_angle_deg = 10;
+    TireDynamics tire_dynamics = 11;
+    veh_vec_float driver_torque = 12;
+    float v_y_lm = 13;
+    float psi_dot_lm_rad_s = 14;
+    TorqueVectoringStatus tv_status = 15;
+    PowerLimitStatus power_limit_status = 16;
+    float electrical_power_watts = 17;
+}

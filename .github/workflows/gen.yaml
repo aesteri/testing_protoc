@@ -1,0 +1,119 @@
+name: Generate, Release, and Maintain
+
+on:
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - published  # Trigger on new release events
+
+jobs:
+  build-lib:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [23.11]
+    steps:
+      - uses: cachix/install-nix-action@v23
+
+      - name: Get branch names
+        id: branch-name
+        uses: tj-actions/branch-names@v7
+      
+      - name: Get current date and time
+        id: date
+        run: echo "date=$(date +'%Y-%m-%dT%H_%M_%S')" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v4
+        with:
+          repository: hytech-racing/HT_proto
+          ref: refs/heads/master
+
+      - run: nix run .#nanopb-runner -- ${{ env.date }}
+
+      - name: Create release artifact
+        run: |
+          mkdir -p hytech_msgs_pb_lib
+          mv *.pb.* hytech_msgs_pb_lib
+          mv hytech_msgs_version.h hytech_msgs_pb_lib
+          echo -e "{\n\"name\": \"hytech_msgs_pb_lib\",\n\"version\": \"1.${{ github.run_number }}.0\"\n}" >> hytech_msgs_pb_lib/library.json
+          tar -czvf hytech_msgs_pb_lib.tar.gz hytech_msgs_pb_lib
+      
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.date }}
+          files: |
+            hytech_msgs_pb_lib.tar.gz
+            ./proto/base_msgs.proto
+            ./proto/hytech_msgs.proto
+
+  update-docs:
+    if: github.event_name == 'push'  # Only run on commits to master
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Protobuf tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+          go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+
+      - name: Generate HTML documentation
+        run: |
+          mkdir -p docs
+          protoc --doc_out=./docs --doc_opt=html,index.html proto/*.proto
+
+      - name: Commit and push updated documentation
+        env:
+          GH_TOKEN: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git diff --quiet --cached || git commit -m "Update HTML documentation"
+          git push
+
+  update-changelog:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate changelog entry
+        id: changelog
+        run: |
+          RELEASE_VERSION="${{ github.event.release.tag_name }}"
+          CHANGELOG_FILE="CHANGELOG.md"
+          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION}) - $(date +'%Y-%m-%d')\n\n"
+          NEW_ENTRY+="* Description of changes here\n\n"
+          echo -e "${NEW_ENTRY}$(cat $CHANGELOG_FILE)" > $CHANGELOG_FILE
+
+      - name: Commit and push updated changelog
+        env:
+          GH_TOKEN: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "Update changelog for ${{ github.event.release.tag_name }}"
+          git push
+
+  release-with-docs:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    needs: [update-docs]  # Ensure docs are updated before creating release
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload HTML documentation as release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: |
+            docs/index.html  # Include the generated HTML documentation in the release
