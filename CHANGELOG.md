@@ -1,3 +1,7 @@
+## [2025-01-12T08_41_00](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T08_41_00) - 2025-01-12T08_41_00
+
+* 
+
 ## [2025-01-12T08_35_15](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T08_35_15) - 2025-01-12T08_35_15
 
 * 
