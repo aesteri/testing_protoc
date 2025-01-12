@@ -1,3 +1,7 @@
+## [2025-01-12T10_46_09](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T10_46_09)
+
+* Delete READMe.md
+
 ## [2025-01-12T10_21_51](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T10_21_51)
 
 * Update hytech_msgs.proto
