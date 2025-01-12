@@ -104,12 +104,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
         run: |
-          # Set up git user
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # # Set up git user
+          # git config --global user.name "github-actions[bot]"
+          # git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           # Add and commit the changelog update
-          git pull origin main --rebase
           git add CHANGELOG.md
           git commit -m "Update changelog for release ${{ github.event.release.tag_name }}"
 
