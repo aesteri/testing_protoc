@@ -3,7 +3,7 @@ name: Generate and Release
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build-lib:
