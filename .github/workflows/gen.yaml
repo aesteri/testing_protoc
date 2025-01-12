@@ -23,13 +23,8 @@ jobs:
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
           export PATH=$PATH:$HOME/go/bin
           which protoc-gen-doc
-
-
-
-      - name: Generate HTML documentation
-        run: |
-          mkdir -p docs
-          protoc -I=proto --doc_out=./docs --doc_opt=html,index.html proto/*.proto
+          protoc -I=proto --doc_out=. --doc_opt=html,index.html proto/*.proto
+          
 
       - name: Commit and push updated documentation
         env:
