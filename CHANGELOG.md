@@ -1,3 +1,7 @@
+## [2025-01-12T10_20_12](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T10_20_12)
+
+* Added protoc-gen-doc and changelog-v1
+
 ## [2025-01-12T10_11_10](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T10_11_10)
 
 * Update HTML documentation
