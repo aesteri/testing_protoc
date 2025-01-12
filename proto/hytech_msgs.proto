@@ -4,8 +4,7 @@
  * This file is really just an example. The data model is completely
  * fictional.
  */
- 
- syntax = "proto3";
+syntax = "proto3";
 package hytech_msgs;
 
 import "base_msgs.proto";
