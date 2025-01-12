@@ -15,17 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get commit messages since last release
-        id: get-commits
-        run: |
-          # Get commit messages since the last release (or tag)
-          COMMIT_MESSAGES=$(git log -1 --pretty=%B)
-          
-          # Save commit messages as an environment variable
-          echo "commit_messages<<EOF" >> $GITHUB_ENV
-          echo "${COMMIT_MESSAGES}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
       - name: Set up Protobuf tools
         run: |
           sudo apt-get install -y --no-install-recommends protobuf-compiler
@@ -86,6 +75,7 @@ jobs:
         id: changelog
         run: |
           RELEASE_VERSION="${{ env.date }}"
+          COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
           
           # Define changelog file path
           CHANGELOG_FILE="CHANGELOG.md"
