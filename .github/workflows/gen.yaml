@@ -81,21 +81,15 @@ jobs:
         id: changelog
         run: |
           RELEASE_VERSION="${{ env.date }}"
-          COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
-          
-          # Get the most recent commit hash
-          LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
-
-          # Check if it's a merge commit
-          PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
-
-          # Extract the actual commit message from the parent commit (the second commit)
-          ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
-
-          # Get the commit message of the actual commit
-          ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
-
-          # Remove the "Merge pull request" line and clean up the message
+          LATEST_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
+          while true; do
+              COMMIT_AUTHOR=$(git log -n 1 --pretty=format:"%an" $LATEST_COMMIT_HASH)              
+              if [[ "$COMMIT_AUTHOR" != "github-actions[bot]" ]]; then
+                  break
+              fi
+              LATEST_COMMIT_HASH=$(git log $LATEST_COMMIT_HASH^ -n 1 --pretty=format:"%H")
+          done
+          ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $LATEST_COMMIT_HASH)
           ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
 
           # Define changelog file path
