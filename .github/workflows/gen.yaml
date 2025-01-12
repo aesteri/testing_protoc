@@ -25,7 +25,7 @@ jobs:
       - name: Generate HTML documentation
         run: |
           mkdir -p docs
-          protoc --doc_out=./docs --doc_opt=html,index.html proto/*.proto
+          protoc -I=proto --doc_out=./docs --doc_opt=html,index.html proto/*.proto
 
       - name: Commit and push updated documentation
         env:
@@ -36,7 +36,7 @@ jobs:
           git add docs/index.html
           git diff --quiet --cached || git commit -m "Update HTML documentation"
           git push
-          
+
   build-lib:
     runs-on: ubuntu-latest
     strategy:
