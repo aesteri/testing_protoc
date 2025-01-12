@@ -1,3 +1,7 @@
+## [2025-01-12T10_21_51](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T10_21_51)
+
+* Update hytech_msgs.proto
+
 ## [2025-01-12T10_20_12](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T10_20_12)
 
 * Added protoc-gen-doc and changelog-v1
