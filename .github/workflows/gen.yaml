@@ -90,7 +90,7 @@ jobs:
           ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
 
           # Remove the "Merge pull request" line and clean up the message
-          ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*\n//')
+          ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
 
           # Define changelog file path
           CHANGELOG_FILE="CHANGELOG.md"
