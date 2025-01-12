@@ -15,6 +15,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get commit messages since last release
+        id: get-commits
+        run: |
+          # Get commit messages since the last release (or tag)
+          COMMIT_MESSAGES=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=%B)
+          
+          # Save commit messages as an environment variable
+          echo "commit_messages<<EOF" >> $GITHUB_ENV
+          echo "${COMMIT_MESSAGES}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Set up Protobuf tools
         run: |
           sudo apt-get install -y --no-install-recommends protobuf-compiler
@@ -70,21 +81,6 @@ jobs:
             ./docs/index.html
 
       - uses: actions/checkout@v4
-
-      - name: Get commit messages since last release
-        id: get-commits
-        run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-
-          # Find the second most recent tag
-          SECOND_LATEST_TAG=$(git describe --tags --abbrev=0 $LATEST_TAG^)
-
-          # Get commit messages between the two tags
-          COMMIT_MESSAGES=$(git log $SECOND_LATEST_TAG..$LATEST_TAG --pretty=%B)
-          # Save commit messages as an environment variable
-          echo "commit_messages<<EOF" >> $GITHUB_ENV
-          echo "${COMMIT_MESSAGES}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
 
       - name: Generate changelog entry
         id: changelog
