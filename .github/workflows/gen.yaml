@@ -7,19 +7,21 @@ on:
 
 jobs:
 
-  update-docs:
+  build-lib:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [23.11]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Protobuf tools
         run: |
           sudo apt-get install -y --no-install-recommends protobuf-compiler
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
           export PATH=$PATH:$HOME/go/bin
-          mkdir -p doc
-          protoc -I=proto --doc_out=./doc --doc_opt=html,index.html proto/*.proto
+          mkdir -p docs
+          protoc -I=proto --doc_out=./docs --doc_opt=html,index.html proto/*.proto
           
       - name: Commit and push updated documentation
         env:
@@ -28,16 +30,10 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git pull origin main --rebase
-          git add index.html
+          git add docs/index.html
           git diff --quiet --cached || git commit -m "Update HTML documentation"
           git push
 
-  build-lib:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        version: [23.11]
-    steps:
       - uses: cachix/install-nix-action@v23
 
       - name: Get branch names
@@ -49,9 +45,9 @@ jobs:
         run: echo "date=$(date +'%Y-%m-%dT%H_%M_%S')" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
-        with:
-          repository: hytech-racing/HT_proto
-          ref: refs/heads/master
+        # with:
+        #   repository: hytech-racing/HT_proto
+        #   ref: refs/heads/master
 
       - run: nix run .#nanopb-runner -- ${{ env.date }}
 
@@ -71,13 +67,9 @@ jobs:
             hytech_msgs_pb_lib.tar.gz
             ./proto/base_msgs.proto
             ./proto/hytech_msgs.proto
-            index.html
+            ./docs/index.html
 
-  update-changelog:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Get commit messages since last release
         id: get-commits
@@ -100,7 +92,7 @@ jobs:
           CHANGELOG_FILE="CHANGELOG.md"
           
           # Start the new changelog entry
-          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION}) - $(date +'%Y-%m-%d')\n\n"
+          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION}) - ${{ env.date }}\n\n"
           
           # Append the commit messages to the changelog entry
           NEW_ENTRY+="* ${COMMIT_MESSAGES}\n\n"
@@ -122,3 +114,4 @@ jobs:
 
           # Push the changes
           git push
+
