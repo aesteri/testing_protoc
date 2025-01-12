@@ -109,6 +109,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           # Add and commit the changelog update
+          git pull origin main --rebase
           git add CHANGELOG.md
           git commit -m "Update changelog for release ${{ github.event.release.tag_name }}"
 
