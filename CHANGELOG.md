@@ -1,3 +1,9 @@
+## [2025-01-12T08_59_40](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T08_59_40)
+
+* 
+
+Test added 
+
 ## [2025-01-12T08_54_32](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T08_54_32) - 2025-01-12T08_54_32
 
 * Merge pull request #26 from aesteri/test
