@@ -108,8 +108,6 @@ jobs:
           echo -e "${NEW_ENTRY}$(cat $CHANGELOG_FILE)" > $CHANGELOG_FILE
 
       - name: Commit and push updated changelog
-        env:
-          GH_TOKEN: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
         run: |
           # # Set up git user
           # git config --global user.name "github-actions[bot]"
