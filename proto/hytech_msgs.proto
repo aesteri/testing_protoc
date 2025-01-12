@@ -25,6 +25,9 @@ message VCRProtoVersion
     string proto_version = 1;
 }
 
+/**
+ * Represents the booking status ID.
+ */
 message VCFProtoVersion
 {
     string proto_version = 1;
@@ -34,7 +37,9 @@ message DBProtoVersion
 {
     string proto_version = 1;
 }
-
+/**
+ * Represents the booking status ID.
+ */
 message Versions {
     string ht_can_version = 1;
     string ht_proto_version = 2;
