@@ -50,7 +50,7 @@ jobs:
             ./proto/hytech_msgs.proto
 
   # update-docs:
-  #   # if: github.event_name == 'push'  # Only run on commits to master
+  #   if: github.event_name == 'push'  # Only run on commits to master
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: Checkout repository
@@ -78,7 +78,7 @@ jobs:
   #         git push
 
   # update-changelog:
-  #   # if: github.event_name == 'release' && github.event.action == 'published'
+  #   if: github.event_name == 'release' && github.event.action == 'published'
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: Checkout repository
