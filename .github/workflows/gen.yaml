@@ -18,9 +18,13 @@ jobs:
 
       - name: Set up Protobuf tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler
+          # sudo apt-get update
+          sudo apt-get install -y --no-install-recommends protobuf-compiler
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+          export PATH=$PATH:$HOME/go/bin
+          go version
+
+
 
       - name: Generate HTML documentation
         run: |
@@ -84,13 +88,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get commit messages
+        id: get-commits
+        run: |
+          COMMIT_MESSAGES=$(git log -1 --pretty=%B)
+          echo "commit_messages<<EOF" >> $GITHUB_ENV
+          echo "${COMMIT_MESSAGES}" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Generate changelog entry
         id: changelog
         run: |
           RELEASE_VERSION="${{ github.event.release.tag_name }}"
           CHANGELOG_FILE="CHANGELOG.md"
           NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION}) - $(date +'%Y-%m-%d')\n\n"
-          NEW_ENTRY+="* Description of changes here\n\n"
+          NEW_ENTRY+="* $COMMIT_MESSAGES\n\n"
           echo -e "${NEW_ENTRY}$(cat $CHANGELOG_FILE)" > $CHANGELOG_FILE
 
       - name: Commit and push updated changelog
