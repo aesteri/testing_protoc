@@ -22,7 +22,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends protobuf-compiler
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
           export PATH=$PATH:$HOME/go/bin
-          go version
+          which protoc-gen-doc
 
 
 
