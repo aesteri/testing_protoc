@@ -73,6 +73,9 @@ jobs:
             ./docs/index.html
 
       - uses: actions/checkout@v4
+        with:
+          repository: aesteri/testing_protoc
+          ref: refs/heads/main
 
       - name: Generate changelog entry
         id: changelog
