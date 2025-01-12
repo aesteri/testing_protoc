@@ -16,7 +16,9 @@ message veh_vec_float
     float RL = 3;
     float RR = 4;
 }
-
+/**
+ * Represents the booking status ID.
+ */
 message veh_vec_int
 {
     int32 FL = 1;
