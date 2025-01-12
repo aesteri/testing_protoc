@@ -32,7 +32,7 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/index.html
+          git add index.html
           git diff --quiet --cached || git commit -m "Update HTML documentation"
           git push
 
@@ -75,7 +75,7 @@ jobs:
             hytech_msgs_pb_lib.tar.gz
             ./proto/base_msgs.proto
             ./proto/hytech_msgs.proto
-            docs/index.html
+            index.html
 
   update-changelog:
     runs-on: ubuntu-latest
