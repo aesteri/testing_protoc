@@ -44,7 +44,9 @@ message Versions {
     string ht_can_version = 1;
     string ht_proto_version = 2;
 }
-
+/**
+ * Represents the booking status ID.
+ */
 message SpeedControlIn {
     float accel_percent = 1;
     float brake_percent = 2;
