@@ -77,6 +77,18 @@ jobs:
           RELEASE_VERSION="${{ env.date }}"
           COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
           
+          # Get the most recent commit hash
+          LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
+
+          # Check if it's a merge commit
+          PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
+
+          # Extract the actual commit message from the parent commit (the second commit)
+          ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
+
+          # Get the commit message of the actual commit
+          ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
+
           # Define changelog file path
           CHANGELOG_FILE="CHANGELOG.md"
           
@@ -84,7 +96,7 @@ jobs:
           NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION}) - ${{ env.date }}\n\n"
           
           # Append the commit messages to the changelog entry
-          NEW_ENTRY+="* ${COMMIT_MESSAGES}\n\n"
+          NEW_ENTRY+="* ${ACTUAL_COMMIT_MSG}\n\n"
           
           # Add the new entry to the top of the changelog file
           echo -e "${NEW_ENTRY}$(cat $CHANGELOG_FILE)" > $CHANGELOG_FILE
