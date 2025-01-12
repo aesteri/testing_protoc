@@ -85,8 +85,7 @@ jobs:
       - name: Generate changelog entry
         id: changelog
         run: |
-          # Get the release version from the release tag
-          RELEASE_VERSION="${{ github.event.release.tag_name }}"
+          RELEASE_VERSION="${{ env.date }}"
           
           # Define changelog file path
           CHANGELOG_FILE="CHANGELOG.md"
