@@ -17,7 +17,9 @@ message MCUProtoVersion
 {
     string proto_version = 1;
 }
-
+/**
+ * Represents the booking status ID.
+ */
 message VCRProtoVersion
 {
     string proto_version = 1;
