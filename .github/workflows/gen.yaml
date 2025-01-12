@@ -74,12 +74,13 @@ jobs:
       - name: Get commit messages since last release
         id: get-commits
         run: |
-          LAST_RELEASE_TAG=$(git describe --tags --abbrev=0)
-          echo "LAST_RELEASE_TAG=${LAST_RELEASE_TAG}" >> $GITHUB_ENV
+          LATEST_TAG=$(git describe --tags --abbrev=0)
 
-          # Get commit messages since the last release
-          COMMIT_MESSAGES=$(git log $LAST_RELEASE_TAG..HEAD --pretty=%B)
-          
+          # Find the second most recent tag
+          SECOND_LATEST_TAG=$(git describe --tags --abbrev=0 $LATEST_TAG^)
+
+          # Get commit messages between the two tags
+          COMMIT_MESSAGES=$(git log $SECOND_LATEST_TAG..$LATEST_TAG --pretty=%B)
           # Save commit messages as an environment variable
           echo "commit_messages<<EOF" >> $GITHUB_ENV
           echo "${COMMIT_MESSAGES}" >> $GITHUB_ENV
