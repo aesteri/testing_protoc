@@ -6,7 +6,9 @@
  */
 syntax = "proto3";
 package hytech_msgs;
-
+/**
+ * Represents the booking status ID.
+ */
 message veh_vec_float
 {
     float FL = 1;
