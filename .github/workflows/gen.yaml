@@ -89,11 +89,14 @@ jobs:
           # Get the commit message of the actual commit
           ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
 
+          # Remove the "Merge pull request" line and clean up the message
+          ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//')
+
           # Define changelog file path
           CHANGELOG_FILE="CHANGELOG.md"
           
           # Start the new changelog entry
-          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION}) - ${{ env.date }}\n\n"
+          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION})\n\n"
           
           # Append the commit messages to the changelog entry
           NEW_ENTRY+="* ${ACTUAL_COMMIT_MSG}\n\n"
