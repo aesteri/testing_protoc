@@ -1,3 +1,7 @@
+## [2025-01-12T09_28_32](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T09_28_32)
+
+* fixed shit
+
 ## [2025-01-12T09_17_08](https://github.com/aesteri/testing_protoc/releases/tag/2025-01-12T09_17_08)
 
 * fixed shit
