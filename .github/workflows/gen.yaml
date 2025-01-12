@@ -18,6 +18,17 @@ jobs:
           repository: aesteri/testing_protoc
           ref: refs/heads/main
 
+      - name: Save Commit Message
+        id: save_commit
+        run: |
+        COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
+        LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
+        PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
+        ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
+        ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
+        ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
+        echo "ACTUAL_COMMIT_MSG=${ACTUAL_COMMIT_MSG}" >> $GITHUB_ENV
+
       - name: Set up Protobuf tools
         run: |
           sudo apt-get install -y --no-install-recommends protobuf-compiler
@@ -81,27 +92,7 @@ jobs:
         id: changelog
         run: |
           RELEASE_VERSION="${{ env.date }}"
-          LATEST_COMMIT_HASH=$(git log -n 1 --pretty=format:"%H")
-          if ! git cat-file commit $LATEST_COMMIT_HASH &> /dev/null; then
-              echo "Invalid commit hash: $LATEST_COMMIT_HASH"
-              exit 1
-          fi
-          while true; do
-              COMMIT_AUTHOR=$(git log -n 1 --pretty=format:"%an" $LATEST_COMMIT_HASH)              
-              if [[ "$COMMIT_AUTHOR" != "github-actions[bot]" ]]; then
-                  break
-              fi
-              PARENT_COMMIT_EXISTS=$(git log $LATEST_COMMIT_HASH^1 --pretty=format:"%H" | wc -l)
-              if [ "$PARENT_COMMIT_EXISTS" -eq 0 ]; then
-                  echo "No previous commit (this is the first commit). Exiting."
-                  break
-              else
-                  LATEST_COMMIT_HASH=$(git log $LATEST_COMMIT_HASH^1 -n 1 --pretty=format:"%H")
-              fi
-          done
-          ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $LATEST_COMMIT_HASH)
-          ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
-
+          
           # Define changelog file path
           CHANGELOG_FILE="CHANGELOG.md"
           
