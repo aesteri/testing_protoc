@@ -96,7 +96,7 @@ jobs:
           CHANGELOG_FILE="CHANGELOG.md"
           
           # Start the new changelog entry
-          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION}) - ${{ env.date }}\n\n"
+          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION})\n\n"
           
           # Append the commit messages to the changelog entry
           NEW_ENTRY+="* ${ACTUAL_COMMIT_MSG}\n\n"
