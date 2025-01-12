@@ -21,13 +21,13 @@ jobs:
       - name: Save Commit Message
         id: save_commit
         run: |
-        COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
-        LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
-        PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
-        ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
-        ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
-        ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
-        echo "ACTUAL_COMMIT_MSG=${ACTUAL_COMMIT_MSG}" >> $GITHUB_ENV
+          COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
+          LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
+          PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
+          ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
+          ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
+          ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
+          echo "ACTUAL_COMMIT_MSG=${ACTUAL_COMMIT_MSG}" >> $GITHUB_ENV
 
       - name: Set up Protobuf tools
         run: |
