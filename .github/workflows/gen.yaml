@@ -14,6 +14,9 @@ jobs:
         version: [23.11]
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: aesteri/testing_protoc
+          ref: refs/heads/main
 
       - name: Set up Protobuf tools
         run: |
@@ -45,9 +48,9 @@ jobs:
         run: echo "date=$(date +'%Y-%m-%dT%H_%M_%S')" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
-        # with:
-        #   repository: hytech-racing/HT_proto
-        #   ref: refs/heads/master
+        with:
+          repository: aesteri/testing_protoc
+          ref: refs/heads/main
 
       - run: nix run .#nanopb-runner -- ${{ env.date }}
 
