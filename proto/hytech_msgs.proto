@@ -50,7 +50,9 @@ message SpeedControlIn {
     float accel_percent = 1;
     float brake_percent = 2;
 }
-
+/**
+ * Represents the booking status ID.
+ */
 message MCUOutputData
 {
     float accel_percent = 1;
@@ -62,7 +64,9 @@ message MCUOutputData
     bool timing_failure_active = 7;
     int32 round_trip_time_millis = 8;
 }
-
+/**
+ * Represents the booking status ID.
+ */
 message MCUCommandData
 {
     veh_vec_float desired_rpms = 1;
