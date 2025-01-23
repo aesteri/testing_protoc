@@ -39,6 +39,7 @@ jobs:
       - name: Generate changelog
         run: |
           go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
+          export PATH=$PATH:$HOME/go/bin
           git-chglog --o CHANGELOG.md
 
 
