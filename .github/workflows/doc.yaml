@@ -41,7 +41,7 @@ jobs:
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
-          workflow: Generate and Release
+          workflow: ${{ github.event.workflow_run.workflow_id }}
           workflow_conclusion: success
           github_token: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
           name: tag-name-artifact
