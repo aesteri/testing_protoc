@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
-          ref: ref/head/main
+          ref: refs/heads/main
 
       - name: generate chglog
         run: |
