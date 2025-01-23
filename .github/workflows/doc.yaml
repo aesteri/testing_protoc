@@ -46,9 +46,14 @@ jobs:
           github_token: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
           name: tag-name-artifact
 
+      - name: Set tag_name from file
+        run: |
+          TAG_NAME=$(cat tag_name.txt)
+          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
+
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: $(cat tag_name.txt)
+          tag_name: ${{ env.tag_name }}
           files: |
             index.html
