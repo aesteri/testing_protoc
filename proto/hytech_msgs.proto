@@ -73,7 +73,9 @@ message MCUCommandData
     veh_vec_float torque_limit_nm = 2;
     int64 prev_MCU_recv_millis = 3;
 }
-
+/**
+ * Represents the booking status ID.
+ */
 message VNData
 {
     xyz_vector vn_vel_m_s = 1;
