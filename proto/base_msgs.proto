@@ -8,7 +8,7 @@ syntax = "proto3";
 package hytech_msgs;
 
 /**
- * Repents the booking status ID.
+ * Repents the bookingtatus ID.
  */
 message veh_vec_float
 {
