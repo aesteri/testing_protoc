@@ -7,27 +7,26 @@ on:
       - completed
 
 jobs:
+  # build-changelog:
+  #   needs: [build-doc]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
 
-  build-changelog:
-    needs: [build-doc]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+  #     - name: Install dependencies
+  #       run: |
+  #         # Install Ruby and required gems
+  #         sudo apt-get update
+  #         sudo apt-get install -y ruby-full build-essential
+  #         gem install github_changelog_generator
+  #         github_changelog_generator -u ${{ github.repository_owner }} -p ${{ github.event.repository.name }}
 
-      - name: Install dependencies
-        run: |
-          # Install Ruby and required gems
-          sudo apt-get update
-          sudo apt-get install -y ruby-full build-essential
-          gem install github_changelog_generator
-          github_changelog_generator -u ${{ github.repository_owner }} -p ${{ github.event.repository.name }}
-
-      - name: Upload changelog
-        uses: actions/upload-artifact@v3
-        with:
-          name: changelog
-          path: CHANGELOG.md
+  #     - name: Upload changelog
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: changelog
+  #         path: CHANGELOG.md
 
   build-doc:
     runs-on: ubuntu-latest
@@ -52,7 +51,7 @@ jobs:
           path: ./docs/index.html
 
   upload-to-release:
-    needs: [build-doc, build-changelog]
+    needs: [build-doc]
     runs-on: ubuntu-latest
     steps:
       - name: Download artifact from build-docs
