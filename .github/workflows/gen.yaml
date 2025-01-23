@@ -1,4 +1,4 @@
-name: Generate, Release, and Maintain
+name: Generate, Release, and Document
 
 on:
   push:
@@ -6,48 +6,27 @@ on:
       - main
 
 jobs:
-
-  build-lib:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        version: [23.11]
+  build-doc:
     steps:
       - uses: actions/checkout@v4
         with:
           repository: aesteri/testing_protoc
           ref: refs/heads/main
-
-      - name: Save Commit Message
-        id: save_commit
-        run: |
-          COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
-          LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
-          PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
-          ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
-          ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
-          ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
-          echo "ACTUAL_COMMIT_MSG=${ACTUAL_COMMIT_MSG}" >> $GITHUB_ENV
-
-      - name: Set up Protobuf tools
+      - name: Set up Protobuf tools and generate HTML file
         run: |
           sudo apt-get install -y --no-install-recommends protobuf-compiler
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
           export PATH=$PATH:$HOME/go/bin
           mkdir -p docs
           protoc -I=proto --doc_out=./docs --doc_opt=html,index.html proto/*.proto
-          
-      - name: Commit and push updated documentation
-        env:
-          GH_TOKEN: ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add docs/index.html
-          git diff --quiet --cached || git commit -m "Update HTML documentation"
-          git push
-
+      
+  build-lib:
+    needs: [build-doc]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [23.11]
+    steps:
       - uses: cachix/install-nix-action@v23
 
       - name: Get branch names
@@ -82,39 +61,3 @@ jobs:
             ./proto/base_msgs.proto
             ./proto/hytech_msgs.proto
             ./docs/index.html
-
-      - uses: actions/checkout@v4
-        with:
-          repository: aesteri/testing_protoc
-          ref: refs/heads/main
-
-      - name: Generate changelog entry
-        id: changelog
-        run: |
-          RELEASE_VERSION="${{ env.date }}"
-          
-          # Define changelog file path
-          CHANGELOG_FILE="CHANGELOG.md"
-          
-          # Start the new changelog entry
-          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION})\n\n"
-          
-          # Append the commit messages to the changelog entry
-          NEW_ENTRY+="* ${ACTUAL_COMMIT_MSG}\n\n"
-          
-          # Add the new entry to the top of the changelog file
-          echo -e "${NEW_ENTRY}$(cat $CHANGELOG_FILE)" > $CHANGELOG_FILE
-
-      - name: Commit and push updated changelog
-        run: |
-          # # Set up git user
-          # git config --global user.name "github-actions[bot]"
-          # git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
-          # Add and commit the changelog update
-          git add CHANGELOG.md
-          git commit -m "Update changelog for release ${{ github.event.release.tag_name }}"
-
-          # Push the changes
-          git push
-
