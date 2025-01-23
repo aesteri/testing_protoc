@@ -1,4 +1,4 @@
-name: Document and Changelog
+name: Document
 
 on:
   workflow_run:
@@ -25,116 +25,6 @@ jobs:
             -H "Authorization: token ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
           echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
-
-
-  build-changelog:
-    needs: [gather]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository }}
-          ref: refs/heads/main
-
-      - name: Generate changelog
-        run: |
-          mkdir -p .chglog
-          echo 'style: github
-          template: CHANGELOG.tpl.md
-          info:
-            title: CHANGELOG
-            repository_url: https://github.com/aesteri/testing_protoc
-          options:
-            commits:
-              filters:
-                Type:
-                  - feat
-                  - fix
-                  - perf
-                  - refactor
-                  - chore
-            commit_groups:
-              title_maps:
-                feat: Features
-                fix: Bug Fixes
-                perf: Performance Improvements
-                refactor: Code Refactoring
-                chore: Chores
-            header:
-              pattern: "^(\\w*)(?:\\(([\\w\\$\\.\\-\\*\\s]*)\\))?\\:\\s(.*)$"
-              pattern_maps:
-                - Type
-                - Scope
-                - Subject
-            notes:
-              keywords:
-                - BREAKING CHANGE' > .chglog/config.yml
-          echo '{{ if .Versions -}}
-          <a name="unreleased"></a>
-          ## [Unreleased]
-
-          {{ if .Unreleased.CommitGroups -}}
-          {{ range .Unreleased.CommitGroups -}}
-          ### {{ .Title }}
-          {{ range .Commits -}}
-          - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
-          {{ end }}
-          {{ end -}}
-          {{ end -}}
-          {{ end -}}
-
-          {{ range .Versions }}
-          <a name="{{ .Tag.Name }}"></a>
-          ## {{ if .Tag.Previous }}[{{ .Tag.Name }}]{{ else }}{{ .Tag.Name }}{{ end }} - {{ datetime "2006-01-02" .Tag.Date }}
-          {{ range .CommitGroups -}}
-          ### {{ .Title }}
-          {{ range .Commits -}}
-          - {{ if .Scope }}**{{ .Scope }}:** {{ end }}{{ .Subject }}
-          {{ end }}
-          {{ end -}}
-
-          {{- if .RevertCommits -}}
-          ### Reverts
-          {{ range .RevertCommits -}}
-          - {{ .Revert.Header }}
-          {{ end }}
-          {{ end -}}
-
-          {{- if .MergeCommits -}}
-          ### Pull Requests
-          {{ range .MergeCommits -}}
-          - {{ .Header }}
-          {{ end }}
-          {{ end -}}
-
-          {{- if .NoteGroups -}}
-          {{ range .NoteGroups -}}
-          ### {{ .Title }}
-          {{ range .Notes }}
-          {{ .Body }}
-          {{ end }}
-          {{ end -}}
-          {{ end -}}
-          {{ end -}}
-
-          {{- if .Versions }}
-          [Unreleased]: {{ .Info.RepositoryURL }}/compare/{{ $latest := index .Versions 0 }}{{ $latest.Tag.Name }}...HEAD
-          {{ range .Versions -}}
-          {{ if .Tag.Previous -}}
-          [{{ .Tag.Name }}]: {{ $.Info.RepositoryURL }}/compare/{{ .Tag.Previous.Name }}...{{ .Tag.Name }}
-          {{ end -}}
-          {{ end -}}
-          {{ end -}}' > .chglog/CHANGELOG.tpl.md
-          go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
-          export PATH=$PATH:$HOME/go/bin
-          git-chglog --o CHANGELOG.md
-
-
-      - name: Upload changelog
-        uses: actions/upload-artifact@v3
-        with:
-          name: changelog
-          path: CHANGELOG.md
 
   build-doc:
     runs-on: ubuntu-latest
@@ -169,15 +59,9 @@ jobs:
         with:
           name: doc
 
-      - name: Download artifact from build-changelog
-        uses: actions/download-artifact@v3
-        with:
-          name: changelog
-
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.tag_name }} 
           files: |
             index.html
-            CHANGELOG.md
