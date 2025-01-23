@@ -43,6 +43,9 @@ jobs:
   build-doc:
     needs: [build-changelog]
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [23.11]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -99,11 +102,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: doc
+          path: ./docs
 
       - name: Download artifact from build-changelog
         uses: actions/download-artifact@v3
         with:
           name: changelog
+          path: ./docs
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -114,4 +119,4 @@ jobs:
             ./proto/base_msgs.proto
             ./proto/hytech_msgs.proto
             ./docs/index.html
-            CHANGELOG.md
+            ./docsCHANGELOG.md
