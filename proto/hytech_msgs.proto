@@ -86,7 +86,9 @@ message VNData
     GPS_data vn_gps = 6;
     vn_status status = 7;
 }
-
+/**
+ * Represents the booking status ID.
+ */
 message VehicleData
 {
     bool is_ready_to_drive = 1;
