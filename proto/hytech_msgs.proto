@@ -89,7 +89,7 @@ message VNData
     vn_status status = 7;
 }
 /**
- * Represents the booking status ID.
+ * DDDD the booking status ID.
  */
 message VehicleData
 {
