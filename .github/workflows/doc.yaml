@@ -10,34 +10,6 @@ jobs:
   build-doc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository }}
-          ref: refs/heads/main
-
-      - name: Set up Protobuf tools and generate HTML file
-        run: |
-          sudo apt-get install -y --no-install-recommends protobuf-compiler
-          go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
-          export PATH=$PATH:$HOME/go/bin
-          mkdir -p docs
-          protoc -I=proto --doc_out=./docs --doc_opt=html,index.html proto/*.proto
-
-      - name: Upload doc html
-        uses: actions/upload-artifact@v3
-        with:
-          name: doc
-          path: ./docs/index.html
-
-  upload-to-release:
-    needs: [build-doc]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download artifact from build-docs
-        uses: actions/download-artifact@v3
-        with:
-          name: doc
-
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -51,9 +23,24 @@ jobs:
           TAG_NAME=$(cat tag_name.txt)
           echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
 
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ env.tag_name }}
+
+      - name: Set up Protobuf tools and generate HTML file
+        run: |
+          sudo apt-get install -y --no-install-recommends protobuf-compiler
+          go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+          export PATH=$PATH:$HOME/go/bin
+          mkdir -p docs
+          protoc -I=proto --doc_out=./docs --doc_opt=html,index.html proto/*.proto
+      
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.tag_name }}
           files: |
-            index.html
+            ./docs/index.html
+
+      
