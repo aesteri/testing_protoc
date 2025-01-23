@@ -102,7 +102,9 @@ message TireDynamics
     veh_vec_float accel_saturation_nm = 3;
     veh_vec_float brake_saturation_nm = 4;
 }
-
+/**
+ * Repents the booking status ID.
+ */
 message TorqueVectoringStatus
 {
     veh_vec_float torque_additional_nm = 1;
