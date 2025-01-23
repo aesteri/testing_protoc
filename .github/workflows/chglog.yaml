@@ -25,13 +25,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
-          ref: ${{ env.tag_name }}
+          ref: ref/head/main
 
       - name: generate chglog
         run: |
           go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
           export PATH=$PATH:$HOME/go/bin
-          git-chglog -c .chglog/config.yml -o CHANGELOG.md
+          git-chglog -c ${{ github.workspace }}/.chglog/config.yml -o CHANGELOG.md
 
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
