@@ -24,7 +24,7 @@ jobs:
           TAG_NAME=$(curl -s \
             -H "Authorization: token ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
-          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
+          echo "::set-output name=tag_name::$TAG_NAME"
 
   build-doc:
     runs-on: ubuntu-latest
@@ -62,6 +62,6 @@ jobs:
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.tag_name }} 
+          tag_name: ${{ needs.gather.outputs.tag_name }} 
           files: |
             index.html
