@@ -7,34 +7,45 @@ on:
       - completed
 
 jobs:
+  gather:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [23.11]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: refs/heads/main
+
+      - name: Get latest release tag
+        id: get_latest_release
+        run: |
+          TAG_NAME=$(curl -s \
+            -H "Authorization: token ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq -r .tag_name)
+          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
+
+
   build-changelog:
-    needs: [build-doc]
+    needs: [gather]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: aesteri/testing_protoc
+          repository: ${{ github.repository }}
           ref: refs/heads/main
 
-      - name: Save Commit Message
-        id: save_commit
-        run: |
-          COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
-          LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
-          PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
-          ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
-          ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
-          ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
-          echo "ACTUAL_COMMIT_MSG=${ACTUAL_COMMIT_MSG}" >> $GITHUB_ENV  
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-      - name: Generate changelog entry
-        id: changelog
-        run: |
-          RELEASE_VERSION="${{ env.date }}"
-          CHANGELOG_FILE="CHANGELOG.md"
-          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION})\n\n"
-          NEW_ENTRY+="* ${ACTUAL_COMMIT_MSG}\n\n"
-          echo -e "${NEW_ENTRY}$(cat $CHANGELOG_FILE)" > $CHANGELOG_FILE
+      - name: Install generate-changelog
+        run: npm install generate-changelog -g
+
+      - name: Generate changelog
+        run: changelog generate
 
       - name: Upload changelog
         uses: actions/upload-artifact@v3
@@ -44,13 +55,11 @@ jobs:
 
   build-doc:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        version: [23.11]
+    needs: [gather, build-changelog]
     steps:
       - uses: actions/checkout@v4
         with:
-          repository: aesteri/testing_protoc
+          repository: ${{ github.repository }}
           ref: refs/heads/main
 
       - name: Set up Protobuf tools and generate HTML file
@@ -68,21 +77,9 @@ jobs:
           path: ./docs/index.html
 
   upload-to-release:
-    needs: [build-doc, build-changelog]
+    needs: [gather, build-changelog, build-doc]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: aesteri/testing_protoc
-          ref: refs/heads/main
-
-      - name: Get latest release tag
-        id: get_latest_release
-        run: |
-          TAG_NAME=$(curl -s \
-            -H "Authorization: token ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/aesteri/testing_protoc/releases/latest" | jq -r .tag_name)
-          echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Download artifact from build-docs
         uses: actions/download-artifact@v3
