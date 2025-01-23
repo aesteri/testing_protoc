@@ -7,6 +7,10 @@ on:
 
 jobs:
   build-doc:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [23.11]
     steps:
       - uses: actions/checkout@v4
         with:
