@@ -108,7 +108,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: changelog
-          path: ./docs
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -119,4 +118,4 @@ jobs:
             ./proto/base_msgs.proto
             ./proto/hytech_msgs.proto
             ./docs/index.html
-            ./docsCHANGELOG.md
+            CHANGELOG.md
