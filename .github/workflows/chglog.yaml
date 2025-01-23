@@ -31,6 +31,7 @@ jobs:
         run: |
           go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
           export PATH=$PATH:$HOME/go/bin
+          git fetch --tags
           git-chglog -c ${{ github.workspace }}/.chglog/config.yml -o CHANGELOG.md
 
       - name: Upload asset to existing release
