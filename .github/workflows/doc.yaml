@@ -36,15 +36,10 @@ jobs:
           repository: ${{ github.repository }}
           ref: refs/heads/main
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
       - name: Generate changelog
         run: |
-          npm install generate-changelog -g
-          changelog generate
+          go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
+          git-chglog --o CHANGELOG.md
 
 
       - name: Upload changelog
