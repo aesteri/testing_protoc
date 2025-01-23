@@ -5,7 +5,7 @@ syntax = "proto3";
 package hytech_msgs;
 
 /**
- * NUMBER 1
+ * NUMBER 2
  */
 message veh_vec_float
 {
