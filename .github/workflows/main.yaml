@@ -45,3 +45,10 @@ jobs:
             ./proto/base_msgs.proto
             ./proto/hytech_msgs.proto
 
+      - name: Upload tag_name as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tag-name-artifact
+          path: tag_name.txt
+        run: echo ${{ steps.date.outputs.date }} > tag_name.txt
+
