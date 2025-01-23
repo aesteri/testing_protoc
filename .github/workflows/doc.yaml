@@ -2,7 +2,7 @@ name: Document and Changelog
 
 on:
   workflow_run:
-    workflows: ["Generate and Release"]  # Trigger this workflow after the "Build Workflow"
+    workflows: ["Generate and Release"]
     types:
       - completed
 
@@ -83,7 +83,7 @@ jobs:
             -H "Authorization: token ${{ secrets.MY_CUSTOM_GITHUB_TOKEN }}" \
             "https://api.github.com/repos/aesteri/testing_protoc/releases/latest" | jq -r .tag_name)
           echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
-          
+
       - name: Download artifact from build-docs
         uses: actions/download-artifact@v3
         with:
