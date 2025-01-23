@@ -26,8 +26,10 @@ jobs:
           repository: ${{ github.repository }}
           ref: refs/heads/main
           
-      - run: nix run .#nanopb-runner -- ${{ steps.date.outputs.date }}
-      
+      - run: |
+        nix run .#nanopb-runner -- ${{ steps.date.outputs.date }}
+        echo ${{ steps.date.outputs.date }} > tag_name.txt
+
       - name: create release artifact
         run: |
           mkdir -p hytech_msgs_pb_lib
@@ -44,9 +46,6 @@ jobs:
             hytech_msgs_pb_lib.tar.gz
             ./proto/base_msgs.proto
             ./proto/hytech_msgs.proto
-
-      - name: Save tag name to file
-        run: echo ${{ steps.date.outputs.date }} > tag_name.txt
 
       - name: Upload tag_name as artifact
         uses: actions/upload-artifact@v3
