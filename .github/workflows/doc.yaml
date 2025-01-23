@@ -81,8 +81,12 @@ jobs:
         with:
           name: changelog
 
+      - uses: actions/checkout@v4
+        with:
+          repository: aesteri/testing_protoc
+          ref: refs/heads/main
+
       - name: Get latest release tag
-        uses: actions/checkout@v2
         id: get_latest_release
         run: |
           TAG_NAME=$(curl -s \
