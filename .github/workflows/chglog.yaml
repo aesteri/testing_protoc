@@ -1,4 +1,4 @@
-name: ChangeLog
+name: Document
 
 on:
   workflow_run:
@@ -27,74 +27,11 @@ jobs:
           repository: ${{ github.repository }}
           ref: refs/heads/main
 
-      - run: mkdir -p .chglog
-
-      - name: Write config file
-        uses: "DamianReeves/write-file-action@master"
-        with:
-          path: .chglog/config.yml
-          write-mode: overwrite
-          contents: |
-            style: github
-            template: CHANGELOG.tpl.md
-
-            info:
-              title: CHANGELOG
-              repository_url: https://github.com/hytech-racing/HT_proto
-
-            options:
-              commits:
-                filters: {}
-                sort_by: Scope  # Sort commits by scope within tags (optional)
-
-              commit_groups:
-                group_by: ""  # No grouping; list all commits under the tag
-                sort_by: ""
-
-              tags:
-                sort: "semver:desc"  # Sort tags in descending semantic version order
-                filter_pattern: "^v\\d+\\.\\d+\\.\\d+$"  # Only include semantic version tags
-
-              header:
-                pattern: "^(.+)$"  # Include all commit messages without filtering by type
-                pattern_maps:
-                  - Subject
-
-              notes:
-                keywords: []
-
-      - name: Write template file
-        uses: "DamianReeves/write-file-action@master"
-        with:
-          path: .chglog/CHANGELOG.tpl.md
-          write-mode: overwrite
-          contents: |
-            # CHANGELOG
-
-            All notable changes to this project will be documented in this file.
-
-            {{ range .Versions }}
-            ---
-            ## [{{ .Tag.Name }}] - {{ datetime "2006-01-02" .Tag.Date }}
-            {{ range .Commits }}
-            - {{ .Subject }} ({{ .Scope }})
-            {{ end }}
-            {{ end }}
-            ---
-
-            This changelog was generated with ❤️ by [git-chglog](https://github.com/git-chglog/git-chglog).
-
-      - uses: actions/checkout@v4
-        with:
-          repository: ${{ github.repository }}
-          ref: refs/heads/main
-          
       - name: generate chglog
         run: |
           go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
           export PATH=$PATH:$HOME/go/bin
           git-chglog -c .chglog/config.yml -o CHANGELOG.md
-        working-directory: ${{ github.workspace }}
 
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
