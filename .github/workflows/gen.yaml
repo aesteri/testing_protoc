@@ -1,121 +1,121 @@
-# name: Generate, Release, and Document
+name: Generate, Release, and Document
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - main
 
-# jobs:
-#   build-changelog:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           repository: aesteri/testing_protoc
-#           ref: refs/heads/main
+jobs:
+  build-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: aesteri/testing_protoc
+          ref: refs/heads/main
 
-#       - name: Save Commit Message
-#         id: save_commit
-#         run: |
-#           COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
-#           LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
-#           PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
-#           ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
-#           ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
-#           ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
-#           echo "ACTUAL_COMMIT_MSG=${ACTUAL_COMMIT_MSG}" >> $GITHUB_ENV  
+      - name: Save Commit Message
+        id: save_commit
+        run: |
+          COMMIT_MESSAGES=$(git log -1 --pretty=format:"%s")
+          LATEST_COMMIT_HASH=$(git log -1 --pretty=format:"%H")
+          PARENT_COMMITS=$(git rev-list --parents -n 1 $LATEST_COMMIT_HASH)
+          ACTUAL_COMMIT_HASH=$(echo $PARENT_COMMITS | cut -d' ' -f2)
+          ACTUAL_COMMIT_MSG=$(git log --format=%B -n 1 $ACTUAL_COMMIT_HASH)
+          ACTUAL_COMMIT_MSG=$(echo "$ACTUAL_COMMIT_MSG" | sed 's/^Merge pull request.*//' | tr -d '\n')
+          echo "ACTUAL_COMMIT_MSG=${ACTUAL_COMMIT_MSG}" >> $GITHUB_ENV  
 
-#       - name: Generate changelog entry
-#         id: changelog
-#         run: |
-#           RELEASE_VERSION="${{ env.date }}"
-#           CHANGELOG_FILE="CHANGELOG.md"
-#           NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION})\n\n"
-#           NEW_ENTRY+="* ${ACTUAL_COMMIT_MSG}\n\n"
-#           echo -e "${NEW_ENTRY}$(cat $CHANGELOG_FILE)" > $CHANGELOG_FILE
+      - name: Generate changelog entry
+        id: changelog
+        run: |
+          RELEASE_VERSION="${{ env.date }}"
+          CHANGELOG_FILE="CHANGELOG.md"
+          NEW_ENTRY="## [${RELEASE_VERSION}](https://github.com/${{ github.repository }}/releases/tag/${RELEASE_VERSION})\n\n"
+          NEW_ENTRY+="* ${ACTUAL_COMMIT_MSG}\n\n"
+          echo -e "${NEW_ENTRY}$(cat $CHANGELOG_FILE)" > $CHANGELOG_FILE
 
-#       - name: Upload changelog
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: changelog
-#           path: CHANGELOG.md
+      - name: Upload changelog
+        uses: actions/upload-artifact@v3
+        with:
+          name: changelog
+          path: CHANGELOG.md
 
-#   build-doc:
-#     needs: [build-changelog]
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         version: [23.11]
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           repository: aesteri/testing_protoc
-#           ref: refs/heads/main
+  build-doc:
+    needs: [build-changelog]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [23.11]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: aesteri/testing_protoc
+          ref: refs/heads/main
 
-#       - name: Set up Protobuf tools and generate HTML file
-#         run: |
-#           sudo apt-get install -y --no-install-recommends protobuf-compiler
-#           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
-#           export PATH=$PATH:$HOME/go/bin
-#           mkdir -p docs
-#           protoc -I=proto --doc_out=./docs --doc_opt=html,index.html proto/*.proto
+      - name: Set up Protobuf tools and generate HTML file
+        run: |
+          sudo apt-get install -y --no-install-recommends protobuf-compiler
+          go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+          export PATH=$PATH:$HOME/go/bin
+          mkdir -p docs
+          protoc -I=proto --doc_out=./docs --doc_opt=html,index.html proto/*.proto
 
-#       - name: Upload doc html
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: doc
-#           path: ./docs/index.html
+      - name: Upload doc html
+        uses: actions/upload-artifact@v3
+        with:
+          name: doc
+          path: ./docs/index.html
 
-#   build-lib:
-#     needs: [build-doc, build-changelog]
-#     runs-on: ubuntu-latest
-#     strategy:
-#       matrix:
-#         version: [23.11]
-#     steps:
-#       - uses: cachix/install-nix-action@v23
+  build-lib:
+    needs: [build-doc, build-changelog]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [23.11]
+    steps:
+      - uses: cachix/install-nix-action@v23
 
-#       - name: Get branch names
-#         id: branch-name
-#         uses: tj-actions/branch-names@v7
+      - name: Get branch names
+        id: branch-name
+        uses: tj-actions/branch-names@v7
       
-#       - name: Get current date and time
-#         id: date
-#         run: echo "date=$(date +'%Y-%m-%dT%H_%M_%S')" >> $GITHUB_ENV
+      - name: Get current date and time
+        id: date
+        run: echo "date=$(date +'%Y-%m-%dT%H_%M_%S')" >> $GITHUB_ENV
 
-#       - uses: actions/checkout@v4
-#         with:
-#           repository: aesteri/testing_protoc
-#           ref: refs/heads/main
+      - uses: actions/checkout@v4
+        with:
+          repository: aesteri/testing_protoc
+          ref: refs/heads/main
 
-#       - run: nix run .#nanopb-runner -- ${{ env.date }}
+      - run: nix run .#nanopb-runner -- ${{ env.date }}
 
-#       - name: Create release artifact
-#         run: |
-#           mkdir -p hytech_msgs_pb_lib
-#           mv *.pb.* hytech_msgs_pb_lib
-#           mv hytech_msgs_version.h hytech_msgs_pb_lib
-#           echo -e "{\n\"name\": \"hytech_msgs_pb_lib\",\n\"version\": \"1.${{ github.run_number }}.0\"\n}" >> hytech_msgs_pb_lib/library.json
-#           tar -czvf hytech_msgs_pb_lib.tar.gz hytech_msgs_pb_lib
+      - name: Create release artifact
+        run: |
+          mkdir -p hytech_msgs_pb_lib
+          mv *.pb.* hytech_msgs_pb_lib
+          mv hytech_msgs_version.h hytech_msgs_pb_lib
+          echo -e "{\n\"name\": \"hytech_msgs_pb_lib\",\n\"version\": \"1.${{ github.run_number }}.0\"\n}" >> hytech_msgs_pb_lib/library.json
+          tar -czvf hytech_msgs_pb_lib.tar.gz hytech_msgs_pb_lib
 
-#       - name: Download artifact from build-docs
-#         uses: actions/download-artifact@v3
-#         with:
-#           name: doc
-#           path: ./docs
+      - name: Download artifact from build-docs
+        uses: actions/download-artifact@v3
+        with:
+          name: doc
+          path: ./docs
 
-#       - name: Download artifact from build-changelog
-#         uses: actions/download-artifact@v3
-#         with:
-#           name: changelog
+      - name: Download artifact from build-changelog
+        uses: actions/download-artifact@v3
+        with:
+          name: changelog
 
-#       - name: Release
-#         uses: softprops/action-gh-release@v1
-#         with:
-#           tag_name: ${{ env.date }}
-#           files: |
-#             hytech_msgs_pb_lib.tar.gz
-#             ./proto/base_msgs.proto
-#             ./proto/hytech_msgs.proto
-#             ./docs/index.html
-#             CHANGELOG.md
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.date }}
+          files: |
+            hytech_msgs_pb_lib.tar.gz
+            ./proto/base_msgs.proto
+            ./proto/hytech_msgs.proto
+            ./docs/index.html
+            CHANGELOG.md
