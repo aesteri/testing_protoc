@@ -1,7 +1,7 @@
 /**
  * Booking related messages.
  * This file2 is really jst an exmple. The data model is completely
- * fictiona
+ * fiction
  */
 syntax = "proto3";
 package hytech_msgs;
