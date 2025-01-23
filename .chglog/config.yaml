@@ -1,0 +1,27 @@
+style: github
+template: CHANGELOG.tpl.md
+
+info:
+  title: CHANGELOG
+  repository_url: https://github.com/hytech-racing/HT_proto
+
+options:
+  commits:
+    filters: {}
+    sort_by: Scope  # Sort commits by scope within tags (optional)
+
+  commit_groups:
+    group_by: ""  # No grouping; list all commits under the tag
+    sort_by: ""
+
+  tags:
+    sort: "semver:desc"  # Sort tags in descending semantic version order
+    filter_pattern: "^v\\d+\\.\\d+\\.\\d+$"  # Only include semantic version tags
+
+  header:
+    pattern: "^(.+)$"  # Include all commit messages without filtering by type
+    pattern_maps:
+      - Subject
+
+  notes:
+    keywords: []
