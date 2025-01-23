@@ -94,6 +94,7 @@ jobs:
           go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
           export PATH=$PATH:$HOME/go/bin
           git-chglog -c .chglog/config.yml -o CHANGELOG.md
+        working-directory: ${{ github.workspace }}
 
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
