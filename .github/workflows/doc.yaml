@@ -41,11 +41,11 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Install generate-changelog
-        run: npm install generate-changelog -g
-
       - name: Generate changelog
-        run: changelog generate
+        run: |
+          npm install generate-changelog -g
+          changelog generate
+
 
       - name: Upload changelog
         uses: actions/upload-artifact@v3
