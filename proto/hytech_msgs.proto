@@ -29,7 +29,7 @@ message VCFProtoVersion
     string proto_version = 1;
 }
 /**
- * Represents the booking status ID.
+ * Representse booking status ID.
  */
 message DBProtoVersion
 {
