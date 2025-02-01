@@ -1,5 +1,5 @@
 /**
- * CAT 1!
+ * CA
  */
 syntax = "proto3";
 package hytech_msgs;
