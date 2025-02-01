@@ -7,7 +7,7 @@ package hytech_msgs;
 import "base_msgs.proto";
 
 /**
- * Represents the booking status ID.
+ * Represents tbooking status ID.
  */
 message MCUProtoVersion
 {
