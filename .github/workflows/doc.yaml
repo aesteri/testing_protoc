@@ -35,20 +35,20 @@ jobs:
           mkdir -p docs
           protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
           SCRIPT="<script>
-document.addEventListener(\"DOMContentLoaded\", function() {
-  document.querySelectorAll(\"a[href^='#']\").forEach(anchor => {
-    anchor.addEventListener(\"click\", function(event) {
-      event.preventDefault();
-      const targetId = this.getAttribute(\"href\").substring(1);
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: \"smooth\" });
-      }
-    });
-  });
-});
-</script>"
-          sed -i "/<\/head>/i $SCRIPT" "./docs/${{ env.tag_name }}.html"
+          document.addEventListener(\"DOMContentLoaded\", function() {
+            document.querySelectorAll(\"a[href^='#']\").forEach(anchor => {
+              anchor.addEventListener(\"click\", function(event) {
+                event.preventDefault();
+                const targetId = this.getAttribute(\"href\").substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                  targetElement.scrollIntoView({ behavior: \"smooth\" });
+                }
+              });
+            });
+          });
+          </script>"
+          sed "/<\/head>/i $SCRIPT" "./docs/${{ env.tag_name }}.html"
           
           
       - name: Upload asset to existing release
