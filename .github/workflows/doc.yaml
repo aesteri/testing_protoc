@@ -35,21 +35,20 @@ jobs:
           mkdir -p docs
           protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
           FILE="./docs/${{ env.tag_name }}.html"
-          sed -i "/<\/head>/i \
-          <script>\n\
-            document.addEventListener(\"DOMContentLoaded\", function() {\n\
-              document.querySelectorAll(\"a[href^='#']\").forEach(anchor => {\n\
-                anchor.addEventListener(\"click\", function(event) {\n\
-                  event.preventDefault();\n\
-                  const targetId = this.getAttribute(\"href\").substring(1);\n\
-                  const targetElement = document.getElementById(targetId);\n\
-                  if (targetElement) {\n\
-                    targetElement.scrollIntoView({ behavior: \"smooth\" });\n\
-                  }\n\
-                });\n\
-              });\n\
-            });\n\
-          </script>" "$FILE"
+          SCRIPT="<script>
+            document.addEventListener(\"DOMContentLoaded\", function() {
+              document.querySelectorAll(\"a[href^='#']\").forEach(anchor => {
+                anchor.addEventListener(\"click\", function(event) {
+                  event.preventDefault();
+                  const targetId = this.getAttribute(\"href\").substring(1);
+                  const targetElement = document.getElementById(targetId);
+                  if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: \"smooth\" });
+                  }
+                });
+              });
+            });
+          </script>"
           sed -i "/<\/head>/i $SCRIPT" "$FILE"
           
           
