@@ -34,12 +34,6 @@ jobs:
           export PATH=$PATH:$HOME/go/bin
           mkdir -p docs
           protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Append script to HTML
-        run: |
           FILE="./docs/${{ env.tag_name }}.html"
           sed -i "/<\/head>/i \
           <script>\n\
@@ -57,6 +51,7 @@ jobs:
             });\n\
           </script>" "$FILE"
           sed -i "/<\/head>/i $SCRIPT" "$FILE"
+          
           
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
