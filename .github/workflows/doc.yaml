@@ -34,7 +34,30 @@ jobs:
           export PATH=$PATH:$HOME/go/bin
           mkdir -p docs
           protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
-      
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Append script to HTML
+        run: |
+          FILE="path/to/your.html"
+          sed -i "/<\/head>/i \
+          <script>\n\
+            document.addEventListener(\"DOMContentLoaded\", function() {\n\
+              document.querySelectorAll(\"a[href^='#']\").forEach(anchor => {\n\
+                anchor.addEventListener(\"click\", function(event) {\n\
+                  event.preventDefault();\n\
+                  const targetId = this.getAttribute(\"href\").substring(1);\n\
+                  const targetElement = document.getElementById(targetId);\n\
+                  if (targetElement) {\n\
+                    targetElement.scrollIntoView({ behavior: \"smooth\" });\n\
+                  }\n\
+                });\n\
+              });\n\
+            });\n\
+          </script>" "$FILE"
+          sed -i "/<\/head>/i $SCRIPT" "$FILE"
+          
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
         with:
