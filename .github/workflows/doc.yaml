@@ -40,7 +40,7 @@ jobs:
 
       - name: Append script to HTML
         run: |
-          FILE="path/to/your.html"
+          FILE="./docs/${{ env.tag_name }}.html"
           sed -i "/<\/head>/i \
           <script>\n\
             document.addEventListener(\"DOMContentLoaded\", function() {\n\
