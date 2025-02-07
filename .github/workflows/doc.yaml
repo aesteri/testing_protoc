@@ -34,8 +34,8 @@ jobs:
           export PATH=$PATH:$HOME/go/bin
           mkdir -p docs
           protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
-          sed -i '15a\
-          <script>\
+          sed '/<head>/a
+           \ <script>\
                 document.addEventListener("DOMContentLoaded", function() {\
                   document.querySelectorAll("a[href^=\'#\']").forEach(anchor => {\
                     anchor.addEventListener("click", function(event) {\
@@ -50,7 +50,6 @@ jobs:
                 });\
               </script>\
           ' ./docs/${{ env.tag_name }}.html
-          
           
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
