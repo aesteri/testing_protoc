@@ -36,9 +36,11 @@ jobs:
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
           export PATH=$PATH:$HOME/go/bin
           mkdir -p docs
+          mkdir -p proto/nanopb
+          mkdir -p proto/nanopb/google/protobuf
           nix run .#nanopb-runner -- 2025-02-15T23_06_09
-          curl -o proto/descriptor.proto https://raw.githubusercontent.com/nanopb/nanopb/master/generator/proto/google/protobuf/descriptor.proto
-          curl -o proto/nanopb.proto https://raw.githubusercontent.com/nanopb/nanopb/master/generator/proto/nanopb.proto
+          curl -o proto/nanopb/google/protobuf/descriptor.proto https://raw.githubusercontent.com/nanopb/nanopb/master/generator/proto/google/protobuf/descriptor.proto
+          curl -o proto/nanopb/nanopb.proto https://raw.githubusercontent.com/nanopb/nanopb/master/generator/proto/nanopb.proto
           protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
           
                 
