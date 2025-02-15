@@ -27,9 +27,6 @@ jobs:
           repository: ${{ github.repository }}
           ref: ${{ env.tag_name }}
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v23
-    
       - name: Set up Protobuf tools and generate HTML file
         run: |
           mkdir -p docs
