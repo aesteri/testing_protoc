@@ -38,7 +38,9 @@ jobs:
           mkdir -p docs
           nix run .#nanopb-runner -- 2025-02-15T23_06_09
           curl -o proto/nanopb.proto https://raw.githubusercontent.com/nanopb/nanopb/master/generator/proto/nanopb.proto
-          protoc -Iproto/ -I. --nanopb_out=. proto/hytech_msgs.proto
+          PROTOBUF_INCLUDE_PATH=$(nix eval nixpkgs#protobuf.outPath --raw)/include
+          protoc -Iproto -I$PROTOBUF_INCLUDE_PATH -I. --nanopb_out=. proto/hytech_msgs.proto
+        
           protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
           
                 
