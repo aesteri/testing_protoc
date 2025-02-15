@@ -32,7 +32,7 @@ jobs:
           repository: ${{ github.repository }}
           ref: ${{ env.tag_name }}
 
-      - run: nix run .#nanopb-runner -- ${{ env.tag_name }}
+      - run: nix-shell -p nanopb
       
       - name: Set up Protobuf tools and generate HTML file
         run: |
