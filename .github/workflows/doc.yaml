@@ -41,7 +41,7 @@ jobs:
           nix run .#nanopb-runner -- 2025-02-15T23_06_09
           curl -o proto/nanopb/google/protobuf/descriptor.proto https://raw.githubusercontent.com/nanopb/nanopb/master/generator/proto/google/protobuf/descriptor.proto
           curl -o proto/nanopb/nanopb.proto https://raw.githubusercontent.com/nanopb/nanopb/master/generator/proto/nanopb.proto
-          protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
+          protoc -I=proto -I=proto/nanopb --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
           
                 
       - name: Upload asset to existing release
