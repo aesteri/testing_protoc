@@ -42,6 +42,6 @@
           drv = nanopb_runner;
         };
       };
-
+      nanopb-path = "${pkgs.nanopb}/generator/proto";
     });
 }
