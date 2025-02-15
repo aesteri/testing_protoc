@@ -31,16 +31,14 @@ jobs:
         uses: cachix/install-nix-action@v23
     
       - name: Set up Protobuf tools and generate HTML file
-        run: >-
-          nix-shell -I nixpkgs=channel:nixos-23.11 -p nanopb protobuf --run "
-            sudo apt-get install -y --no-install-recommends protobuf-compiler
-            go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
-            export PATH=$PATH:$HOME/go/bin
-            mkdir -p docs
-            NANOPB_PROTO_PATH=\$(nix eval nixpkgs#nanopb.outPath --raw)/generator/proto
-            echo \"NANOPB_PROTO_PATH: \$NANOPB_PROTO_PATH\"
-            protoc -I=proto -I=\$NANOPB_PROTO_PATH --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
-          "
+        run: |
+          sudo apt-get install -y --no-install-recommends protobuf-compiler
+          go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+          export PATH=$PATH:$HOME/go/bin
+          mkdir -p docs
+          curl -o proto/nanopb.proto https://raw.githubusercontent.com/nanopb/nanopb/master/generator/proto/nanopb.proto
+          protoc -I=proto --doc_out=./docs --doc_opt=html,${{ env.tag_name }}.html proto/*.proto
+          
                 
       - name: Upload asset to existing release
         uses: softprops/action-gh-release@v1
