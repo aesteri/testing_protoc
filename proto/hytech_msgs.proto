@@ -1,57 +1,38 @@
-/**
- * CA
- */
 syntax = "proto3";
 package hytech_msgs;
-
+import "nanopb.proto";
 import "base_msgs.proto";
 
-/**
- * Represents tbooking status ID.
- */
 message MCUProtoVersion
 {
     string proto_version = 1;
 }
-/**
- * Represents the booking status ID.
- */
+
 message VCRProtoVersion
 {
     string proto_version = 1;
 }
 
-/**
- * Represents the booking status ID.
- */
 message VCFProtoVersion
 {
     string proto_version = 1;
 }
-/**
- * Representse booking status ID.
- */
+
 message DBProtoVersion
 {
     string proto_version = 1;
 }
-/**
- * Represents the booking status ID.
- */
+
 message Versions {
     string ht_can_version = 1;
     string ht_proto_version = 2;
 }
-/**
- * Represents the booking status ID.
- */
+
 message SpeedControlIn {
     float accel_percent = 1;
     float brake_percent = 2;
 }
-/**
- * Represents the booking status ID.
- */
+
 message MCUOutputData
 {
     float accel_percent = 1;
@@ -63,18 +44,14 @@ message MCUOutputData
     bool timing_failure_active = 7;
     int32 round_trip_time_millis = 8;
 }
-/**
- * Represents the booking status ID.
- */
+
 message MCUCommandData
 {
     veh_vec_float desired_rpms = 1;
     veh_vec_float torque_limit_nm = 2;
     int64 prev_MCU_recv_millis = 3;
 }
-/**
- * Represents the booking status ID.
- */
+
 message VNData
 {
     xyz_vector vn_vel_m_s = 1;
@@ -85,9 +62,7 @@ message VNData
     GPS_data vn_gps = 6;
     vn_status status = 7;
 }
-/**
- * DDDD the booking status ID.
- */
+
 message VehicleData
 {
     bool is_ready_to_drive = 1;
@@ -107,4 +82,60 @@ message VehicleData
     TorqueVectoringStatus tv_status = 15;
     PowerLimitStatus power_limit_status = 16;
     float electrical_power_watts = 17;
+}
+
+
+//define structs 
+
+/**
+ * All system AND interface data in VCF. VCF systems will place data in some of the nested structs, while
+ * systems will place data in some of the other structs.
+ */
+message VCFData_s
+{
+    FrontLoadCellData_s front_loadcell_data = 1;
+    FrontSusPotData_s front_suspot_data = 2;
+    SteeringSensorData_s steering_data = 3;
+    DashInputState_s dash_input_state = 4; // Direct button signals from the dashboard IOExpander
+    VCFEthernetLinkData_s vcf_ethernet_link_data = 5;
+    PedalsSystemData_s pedals_system_data = 6;
+}
+
+/**
+ * All system AND interface data in VCR. VCR systems will place data in some of the nested structs, while
+ * systems will place data in some of the other nested structs.
+ */
+message VCRData_s
+{
+    RearLoadCellData_s rear_loadcell_data = 1;
+    RearSusPotData_s rear_suspot_data = 2;
+    ShutdownSensingData_s shutdown_sensing_data = 3;
+    VCREthernetLinkData_s ethernet_is_linked = 4;
+    veh_vec_inverter inverter_data = 5;
+    CurrentSensorData_s current_sensor_data = 6;
+    DrivetrainDynamicReport_s drivetrain_data = 9;
+    AMSSystemData_s ams_data = 10;
+    bool buzzer_is_active = 11;
+}
+
+/**
+ * Minimum data that the ACU must send for the car to run. Detailed temps/voltages are not minimum-viable. The
+ * ACUAllData message contains an instance of the data in this ACUCoreData struct.
+ */
+message ACUCoreData_s
+{
+    float pack_voltage = 1;
+    float min_cell_voltage = 2; // IIR filtered min cell voltage
+    float avg_cell_voltage = 3;
+    float max_cell_temp = 4; // IIR filtered max cell temp
+}
+
+/**
+ * ACUAllData contains the detailed, unprocessed data from ACU sensors.
+ */
+message ACUAllData_s
+{
+    repeated float voltages = 1 [(nanopb).max_count = 126];
+    repeated float cell_temperatures = 2 [(nanopb).max_count = 48];
+    repeated float board_humidities = 3 [(nanopb).max_count = 6];
 }
