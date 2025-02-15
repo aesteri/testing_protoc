@@ -36,6 +36,7 @@ jobs:
         run: |
           nix run .#nanopbRunner -- ${{ env.tag_name }}
           NANOPB_PROTO_PATH=$(nix eval .#nanopb-path --raw)
+          ls
           sudo apt-get install -y --no-install-recommends protobuf-compiler
           go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
           export PATH=$PATH:$HOME/go/bin
