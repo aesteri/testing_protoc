@@ -32,11 +32,10 @@
         fi
         ${pkgs.nanopb}/bin/nanopb_generator.py -I=./proto hytech_msgs.proto base_msgs.proto
       '';
-      
+
       html_generator = pkgs.writeShellScriptBin "generate-html" ''
         #!${pkgs.stdenv.shell}
         export PATH="${pkgs.protoc-gen-doc}/bin:$PATH"
-        export PATH="${pkgs.go}/bin:$PATH"
         export PATH="${pkgs.protobuf}/bin:$PATH"
 
         if [ -z "$1" ]; then
@@ -44,7 +43,7 @@
           exit 1
         fi
 
-        protoc -I=proto -I=${pkgs.nanopb}/bin/ --doc_out=./docs --doc_opt=html,"$1".html proto/*.proto
+        protoc -I=proto -I=${pkgs.nanopb}/share/nanopb/generator/proto --doc_out=./docs --doc_opt=html,"$1".html proto/*.proto
       '';
     in
     {
