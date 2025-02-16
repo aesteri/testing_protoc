@@ -24,7 +24,7 @@ jobs:
           TAG_NAME=$(cat tag_name.txt)
           echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
       
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
           ref: ${{ env.tag_name }}
@@ -32,7 +32,6 @@ jobs:
       - name: Set up Protobuf tools and generate HTML file
         run: |
           mkdir -p docs
-          
           nix run .#html-generator -- ${{ env.tag_name }}
           
                 
