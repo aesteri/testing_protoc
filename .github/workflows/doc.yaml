@@ -11,9 +11,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: cachix/install-nix-action@v23
-      - name: Get branch names
-        id: branch-name
-        uses: tj-actions/branch-names@v7
       
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
